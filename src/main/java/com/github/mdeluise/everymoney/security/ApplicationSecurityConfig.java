@@ -67,7 +67,7 @@ public class ApplicationSecurityConfig {
 
         http.authorizeHttpRequests()
             .requestMatchers("/authentication/**").permitAll()
-            .requestMatchers(h2ConsolePath + "/**").permitAll()
+            .requestMatchers("/api/h2-console/**").permitAll()
             .requestMatchers(
                 "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
                 "/webjars/swagger-ui/**"

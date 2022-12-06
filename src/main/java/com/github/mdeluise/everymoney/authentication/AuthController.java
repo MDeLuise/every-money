@@ -47,7 +47,7 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(
         summary = "Username and password login",
-        description = "Login using username and password"
+        description = "Login using username and password."
     )
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -77,7 +77,7 @@ public class AuthController {
     @PostMapping("/logout")
     @Operation(
         summary = "Logout",
-        description = "Logout from the system"
+        description = "Logout from the system."
     )
     public ResponseEntity<?> logoutUser() {
         ResponseCookie cookie = jwtWebUtil.generateCleanJwtCookie();
@@ -89,7 +89,7 @@ public class AuthController {
     @PostMapping("/signup")
     @Operation(
         summary = "Signup",
-        description = "Create a new account"
+        description = "Create a new account."
     )
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userService.existsByUsername(signUpRequest.username())) {
