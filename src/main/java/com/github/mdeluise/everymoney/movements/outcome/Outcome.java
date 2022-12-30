@@ -15,6 +15,7 @@ public class Outcome extends AbstractMovement {
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+    private boolean discount;
 
 
     public Category getCategory() {
@@ -24,5 +25,15 @@ public class Outcome extends AbstractMovement {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+
+    public boolean isDiscount() {
+        return discount;
+    }
+
+
+    public void setDiscount(boolean discount) {
+        this.discount = discount;
     }
 }

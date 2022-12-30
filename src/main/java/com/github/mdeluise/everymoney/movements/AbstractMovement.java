@@ -10,6 +10,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
@@ -22,7 +23,10 @@ public abstract class AbstractMovement {
     @GeneratedValue
     private Long id;
     private double amount;
+    @Min(1)
+    private int quantity = 1;
     private String description;
+    private String note;
     @NotNull
     private Instant date = Instant.now();
     @ManyToOne
@@ -50,6 +54,31 @@ public abstract class AbstractMovement {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+
+    public double getTotalAmount() {
+        return amount * quantity;
+    }
+
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+
+    public String getNote() {
+        return note;
+    }
+
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
 
@@ -102,13 +131,14 @@ public abstract class AbstractMovement {
             return false;
         }
         AbstractMovement that = (AbstractMovement) o;
-        return Double.compare(that.amount, amount) == 0 && Objects.equals(description, that.description) &&
-                   wallet.equals(that.wallet);
+        return Double.compare(that.amount, amount) == 0 && quantity == that.quantity &&
+                   Objects.equals(description, that.description) && Objects.equals(note, that.note) &&
+                   Objects.equals(date, that.date) && Objects.equals(wallet, that.wallet);
     }
 
 
     @Override
     public int hashCode() {
-        return Objects.hash(amount, description, wallet);
+        return Objects.hash(amount, quantity, description, note, date, wallet);
     }
 }

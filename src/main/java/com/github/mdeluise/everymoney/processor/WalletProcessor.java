@@ -35,9 +35,9 @@ public class WalletProcessor {
         double balance = wallet.getStartingAmount();
         for (AbstractMovement movement : wallet.getMovements()) {
             if (movement instanceof Income) {
-                balance += movement.getAmount();
+                balance += movement.getTotalAmount();
             } else {
-                balance -= movement.getAmount();
+                balance -= movement.getTotalAmount();
             }
         }
         return balance;
@@ -76,11 +76,11 @@ public class WalletProcessor {
     public double getNetIncome(long walletId, Instant periodStart, Instant periodEnd) {
         double income =
             getIncomes(walletId, periodStart, periodEnd, false).stream()
-                                                               .mapToDouble(AbstractMovement::getAmount)
+                                                               .mapToDouble(AbstractMovement::getTotalAmount)
                                                                .sum();
         double outcome =
             getOutcomes(walletId, periodStart, periodEnd, false).stream()
-                                                                .mapToDouble(AbstractMovement::getAmount)
+                                                                .mapToDouble(AbstractMovement::getTotalAmount)
                                                                 .sum();
         return income - outcome;
     }
@@ -98,7 +98,7 @@ public class WalletProcessor {
     public double getMonthlyOutcomeMean(long walletId, YearMonth periodStart, YearMonth periodEnd) {
         double outcomes = getOutcomes(walletId, startYearMonthToInstant(periodStart), endYearMonthToInstant(periodEnd),
                                       false
-        ).stream().mapToDouble(Outcome::getAmount).sum();
+        ).stream().mapToDouble(Outcome::getTotalAmount).sum();
         return outcomes / (periodStart.until(periodEnd, ChronoUnit.MONTHS) + 1);
     }
 
@@ -107,7 +107,7 @@ public class WalletProcessor {
         double incomes =
             getIncomes(walletId, startYearMonthToInstant(periodStart), endYearMonthToInstant(periodEnd), false).stream()
                                                                                                                .mapToDouble(
-                                                                                                                   Income::getAmount)
+                                                                                                                   Income::getTotalAmount)
                                                                                                                .sum();
         return incomes / (periodStart.until(periodEnd, ChronoUnit.MONTHS) + 1);
     }
@@ -165,6 +165,6 @@ public class WalletProcessor {
 
 
     private double getCategoryTotalOutcome(Category category) {
-        return category.getOutcomes().stream().mapToDouble(Outcome::getAmount).sum();
+        return category.getOutcomes().stream().mapToDouble(Outcome::getTotalAmount).sum();
     }
 }

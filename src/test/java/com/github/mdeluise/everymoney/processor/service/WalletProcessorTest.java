@@ -86,7 +86,7 @@ public class WalletProcessorTest {
         Set<Income> incomes =
             walletService.get(0L).getMovements().stream().filter(abstractMovement -> abstractMovement instanceof Income)
                          .map(abstractMovement -> (Income) abstractMovement).collect(Collectors.toSet());
-        Assertions.assertThat(walletProcessor.getIncomes(0L, Instant.MIN, Instant.MAX, true)).hasSize(2);
+        Assertions.assertThat(walletProcessor.getIncomes(0L, Instant.MIN, Instant.MAX, true)).hasSize(3);
         Assertions.assertThat(walletProcessor.getIncomes(0L, Instant.MIN, Instant.MAX, true)).containsAll(incomes);
     }
 
@@ -117,14 +117,14 @@ public class WalletProcessorTest {
     void whenGetNetIncome_thenReturnNetIncome() {
         prepareEnvironment();
         Assertions.assertThat(walletProcessor.getNetIncome(0L, Instant.MIN, Instant.MAX))
-                  .isCloseTo(11.6, Percentage.withPercentage(0.01));
+                  .isCloseTo(11.8, Percentage.withPercentage(0.01));
     }
 
 
     private void prepareEnvironment() {
         Wallet wallet = new Wallet();
         wallet.setId(0L);
-        wallet.setStartingAmount(.5);
+        wallet.setStartingAmount(.3);
         Mockito.when(walletService.get(0L)).thenReturn(wallet);
 
         Instant instant1 = Instant.now();
@@ -138,7 +138,13 @@ public class WalletProcessorTest {
         income2.setAmount(32);
         income2.setWallet(wallet);
         income2.setDate(instant2);
-        Set<Income> incomes = Set.of(income1, income2);
+        Income income3 = new Income();
+        income3.setId(2L);
+        income3.setAmount(.1);
+        income3.setWallet(wallet);
+        income3.setDate(instant2);
+        income3.setQuantity(2);
+        Set<Income> incomes = Set.of(income1, income2, income3);
 
         Outcome outcome1 = new Outcome();
         outcome1.setId(0L);
@@ -155,6 +161,4 @@ public class WalletProcessorTest {
         allMovements.addAll(outcomes);
         wallet.setMovements(allMovements);
     }
-
-
 }
