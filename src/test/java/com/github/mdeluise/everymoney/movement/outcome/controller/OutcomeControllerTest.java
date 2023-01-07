@@ -9,6 +9,7 @@ import com.github.mdeluise.everymoney.authorization.permission.PermissionReposit
 import com.github.mdeluise.everymoney.authorization.permission.PermissionService;
 import com.github.mdeluise.everymoney.category.Category;
 import com.github.mdeluise.everymoney.category.CategoryService;
+import com.github.mdeluise.everymoney.category.subcategory.SubCategoryService;
 import com.github.mdeluise.everymoney.exception.EntityNotFoundException;
 import com.github.mdeluise.everymoney.movements.outcome.Outcome;
 import com.github.mdeluise.everymoney.movements.outcome.OutcomeController;
@@ -61,6 +62,8 @@ public class OutcomeControllerTest {
     WalletService walletService;
     @MockBean
     CategoryService categoryService;
+    @MockBean
+    SubCategoryService subCategoryService;
     @MockBean
     UserRepository userRepository;
     @MockBean

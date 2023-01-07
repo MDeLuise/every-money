@@ -1,10 +1,13 @@
 package com.github.mdeluise.everymoney.category;
 
+import com.github.mdeluise.everymoney.category.subcategory.SubCategory;
 import com.github.mdeluise.everymoney.common.AbstractCrudController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Collection;
@@ -48,5 +51,11 @@ public class CategoryController implements AbstractCrudController<Category, Long
     @Override
     public ResponseEntity<Category> save(Category entityToSave) {
         return new ResponseEntity<>(categoryService.save(entityToSave), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/{id}/sub_categories")
+    public ResponseEntity<Collection<SubCategory>> getAllSubCategories(@PathVariable long id) {
+        return new ResponseEntity<>(categoryService.get(id).getSubCategories(), HttpStatus.OK);
     }
 }

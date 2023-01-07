@@ -1,6 +1,7 @@
 package com.github.mdeluise.everymoney.movements.outcome;
 
 import com.github.mdeluise.everymoney.category.CategoryService;
+import com.github.mdeluise.everymoney.category.subcategory.SubCategoryService;
 import com.github.mdeluise.everymoney.common.AbstractCrudController;
 import com.github.mdeluise.everymoney.wallet.WalletService;
 import org.modelmapper.ModelMapper;
@@ -19,15 +20,18 @@ public class OutcomeController implements AbstractCrudController<OutcomeDTO, Lon
     private final OutcomeService outcomeService;
     private final WalletService walletService;
     private final CategoryService categoryService;
+    private final SubCategoryService subCategoryService;
     private final ModelMapper modelMapper;
 
 
     @Autowired
     public OutcomeController(OutcomeService outcomeService, WalletService walletService,
-                             CategoryService categoryService, ModelMapper modelMapper) {
+                             CategoryService categoryService, SubCategoryService subCategoryService,
+                             ModelMapper modelMapper) {
         this.outcomeService = outcomeService;
         this.walletService = walletService;
         this.categoryService = categoryService;
+        this.subCategoryService = subCategoryService;
         this.modelMapper = modelMapper;
     }
 
@@ -70,6 +74,9 @@ public class OutcomeController implements AbstractCrudController<OutcomeDTO, Lon
         Outcome outcome = modelMapper.map(outcomeDTO, Outcome.class);
         outcome.setWallet(walletService.get(outcomeDTO.getWalletId()));
         outcome.setCategory(categoryService.get(outcomeDTO.getCategoryId()));
+        if (outcomeDTO.getSubCategoryId().isPresent()) {
+            outcome.setSubCategory(subCategoryService.get(outcomeDTO.getSubCategoryId().get()));
+        }
         return outcome;
     }
 

@@ -1,11 +1,12 @@
-package com.github.mdeluise.everymoney.category;
+package com.github.mdeluise.everymoney.category.subcategory;
 
-import com.github.mdeluise.everymoney.category.subcategory.SubCategory;
+import com.github.mdeluise.everymoney.category.Category;
 import com.github.mdeluise.everymoney.movements.outcome.Outcome;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -15,8 +16,8 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "sub_categories")
+public class SubCategory {
     @Id
     @GeneratedValue
     private Long id;
@@ -24,19 +25,20 @@ public class Category {
     @NotBlank
     private String name;
     private String description;
-    @OneToMany(mappedBy = "category")
+    @ManyToOne(optional = false)
+    private Category category;
+    @OneToMany(mappedBy = "id")
     private Set<Outcome> outcomes = new HashSet<>();
-    @OneToMany(mappedBy = "category")
-    private Set<SubCategory> subCategories = new HashSet<>();
 
 
-    public Category(String name, String description) {
+    public SubCategory(String name, String description, Category category) {
         this.name = name;
         this.description = description;
+        this.category = category;
     }
 
 
-    public Category() {
+    public SubCategory() {
     }
 
 
@@ -80,13 +82,13 @@ public class Category {
     }
 
 
-    public Set<SubCategory> getSubCategories() {
-        return subCategories;
+    public Category getCategory() {
+        return category;
     }
 
 
-    public void setSubCategories(Set<SubCategory> subCategories) {
-        this.subCategories = subCategories;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
 
@@ -98,14 +100,14 @@ public class Category {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Category category = (Category) o;
-        return name.equals(category.name) && Objects.equals(description, category.description) &&
-                   outcomes.equals(category.outcomes);
+        SubCategory that = (SubCategory) o;
+        return Objects.equals(name, that.name) && Objects.equals(description, that.description) &&
+                   category.equals(that.category) && outcomes.equals(that.outcomes);
     }
 
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, outcomes);
+        return Objects.hash(name, description, category);
     }
 }

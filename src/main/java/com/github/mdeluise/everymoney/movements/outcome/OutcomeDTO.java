@@ -1,12 +1,14 @@
 package com.github.mdeluise.everymoney.movements.outcome;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public class OutcomeDTO {
     private long id;
     private double amount;
     private String description;
     private long categoryId;
+    private Optional<Long> subCategoryId;
     private Instant date;
     private long walletId;
     private Long transferCounterpartId;
@@ -85,6 +87,16 @@ public class OutcomeDTO {
 
     public void setCategoryId(long categoryId) {
         this.categoryId = categoryId;
+    }
+
+
+    public Optional<Long> getSubCategoryId() {
+        return subCategoryId;
+    }
+
+
+    public void setSubCategoryId(Optional<Long> subCategoryId) {
+        this.subCategoryId = subCategoryId;
     }
 
 
