@@ -11,9 +11,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "wallets")
@@ -27,7 +28,7 @@ public class Wallet {
     private String description;
     private double startingAmount;
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<AbstractMovement> movements = new HashSet<>();
+    private List<AbstractMovement> movements = new ArrayList<>();
 
 
     public Wallet() {
@@ -74,12 +75,12 @@ public class Wallet {
     }
 
 
-    public Set<AbstractMovement> getMovements() {
+    public Collection<AbstractMovement> getMovements() {
         return movements;
     }
 
 
-    public void setMovements(Set<AbstractMovement> movements) {
+    public void setMovements(List<AbstractMovement> movements) {
         this.movements = movements;
     }
 

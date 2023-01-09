@@ -19,7 +19,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -151,7 +152,7 @@ public class WalletProcessorTest {
         outcome2.setDate(instant2);
         Set<Outcome> outcomes = Set.of(outcome1, outcome2);
 
-        Set<AbstractMovement> allMovements = new HashSet<>(incomes);
+        List<AbstractMovement> allMovements = new ArrayList<>(incomes);
         allMovements.addAll(outcomes);
         wallet.setMovements(allMovements);
     }

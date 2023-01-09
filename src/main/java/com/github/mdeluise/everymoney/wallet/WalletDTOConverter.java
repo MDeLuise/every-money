@@ -27,7 +27,7 @@ public class WalletDTOConverter extends AbstractDTOConverter<Wallet, WalletDTO> 
         wallet.setMovements(
             walletDTO.getMovements().stream()
                      .map(movementDTOConverter::convertFromDTO)
-                     .collect(Collectors.toSet())
+                     .collect(Collectors.toList())
         );
         return wallet;
     }
