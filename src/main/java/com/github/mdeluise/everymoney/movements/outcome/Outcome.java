@@ -9,6 +9,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Optional;
+
 @Entity
 @Table(name = "outcomes")
 public class Outcome extends AbstractMovement {
@@ -21,6 +23,9 @@ public class Outcome extends AbstractMovement {
     private SubCategory subCategory;
 
 
+    public Outcome() {
+    }
+
     public Category getCategory() {
         return category;
     }
@@ -31,8 +36,8 @@ public class Outcome extends AbstractMovement {
     }
 
 
-    public SubCategory getSubCategory() {
-        return subCategory;
+    public Optional<SubCategory> getSubCategory() {
+        return subCategory != null ? Optional.of(subCategory) : Optional.empty();
     }
 
 

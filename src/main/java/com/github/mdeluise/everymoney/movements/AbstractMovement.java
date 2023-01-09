@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -28,7 +29,7 @@ public abstract class AbstractMovement {
     @ManyToOne
     @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, optional = true)
     @JoinColumn(name = "counterpart_id")
     private AbstractMovement counterpart;
 
@@ -83,8 +84,8 @@ public abstract class AbstractMovement {
     }
 
 
-    public AbstractMovement getCounterpart() {
-        return counterpart;
+    public Optional<AbstractMovement> getCounterpart() {
+        return counterpart != null ? Optional.of(counterpart) : Optional.empty();
     }
 
 

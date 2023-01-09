@@ -2,17 +2,24 @@ package com.github.mdeluise.everymoney.wallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mdeluise.everymoney.TestEnvironment;
+import com.github.mdeluise.everymoney.category.CategoryService;
+import com.github.mdeluise.everymoney.category.subcategory.SubCategoryService;
 import com.github.mdeluise.everymoney.exception.EntityNotFoundException;
+import com.github.mdeluise.everymoney.movements.MovementDTOConverter;
+import com.github.mdeluise.everymoney.movements.income.IncomeDTOConverter;
+import com.github.mdeluise.everymoney.movements.outcome.OutcomeDTOConverter;
 import com.github.mdeluise.everymoney.security.ApplicationSecurityConfig;
 import com.github.mdeluise.everymoney.security.jwt.JwtTokenFilter;
 import com.github.mdeluise.everymoney.security.jwt.JwtTokenUtil;
 import com.github.mdeluise.everymoney.security.jwt.JwtWebUtil;
 import com.github.mdeluise.everymoney.wallet.Wallet;
 import com.github.mdeluise.everymoney.wallet.WalletController;
+import com.github.mdeluise.everymoney.wallet.WalletDTOConverter;
 import com.github.mdeluise.everymoney.wallet.WalletService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,14 +41,25 @@ import java.util.List;
         JwtWebUtil.class,
         TestEnvironment.class,
         ApplicationSecurityConfig.class,
+        WalletDTOConverter.class,
+        ModelMapper.class,
+        MovementDTOConverter.class,
+        IncomeDTOConverter.class,
+        OutcomeDTOConverter.class
     }
 )
 @WithMockUser(roles = "ADMIN")
 public class WalletControllerTest {
     @MockBean
     WalletService walletService;
+    @MockBean
+    CategoryService categoryService;
+    @MockBean
+    SubCategoryService subCategoryService;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    WalletDTOConverter walletDTOConverter;
     @Autowired
     private MockMvc mockMvc;
 
@@ -109,7 +127,8 @@ public class WalletControllerTest {
         updated.setDescription("description1");
         Mockito.when(walletService.update(0L, updated)).thenReturn(updated);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/wallet/0").content(objectMapper.writeValueAsString(updated))
+        mockMvc.perform(MockMvcRequestBuilders.put("/wallet/0").content(
+                                                  objectMapper.writeValueAsString(walletDTOConverter.convertToDTO(updated)))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().isOk())
                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("wallet1"))
@@ -125,7 +144,8 @@ public class WalletControllerTest {
         updated.setDescription("description1");
         Mockito.doThrow(EntityNotFoundException.class).when(walletService).update(0L, updated);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/wallet/0").content(objectMapper.writeValueAsString(updated))
+        mockMvc.perform(MockMvcRequestBuilders.put("/wallet/0").content(
+                                                  objectMapper.writeValueAsString(walletDTOConverter.convertToDTO(updated)))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
@@ -139,7 +159,8 @@ public class WalletControllerTest {
         created.setDescription("description1");
         Mockito.when(walletService.save(created)).thenReturn(created);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/wallet").content(objectMapper.writeValueAsString(created))
+        mockMvc.perform(MockMvcRequestBuilders.post("/wallet").content(
+                                                  objectMapper.writeValueAsString(walletDTOConverter.convertToDTO(created)))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().isOk())
                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("wallet1"))

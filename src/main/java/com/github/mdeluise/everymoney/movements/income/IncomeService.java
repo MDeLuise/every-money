@@ -45,9 +45,9 @@ public class IncomeService extends AbstractCrudService<Income, Long> {
     @Override
     public Income save(Income entityToSave) {
         Income saved = repository.save(entityToSave);
-        if (saved.getCounterpart() != null) {
-            saved.getCounterpart().setCounterpart(saved);
-            outcomeRepository.save((Outcome) saved.getCounterpart());
+        if (saved.getCounterpart().isPresent()) {
+            saved.getCounterpart().get().setCounterpart(saved);
+            outcomeRepository.save((Outcome) saved.getCounterpart().get());
         }
         return saved;
     }

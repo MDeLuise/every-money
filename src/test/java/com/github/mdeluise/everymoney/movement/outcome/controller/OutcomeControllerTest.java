@@ -13,7 +13,7 @@ import com.github.mdeluise.everymoney.category.subcategory.SubCategoryService;
 import com.github.mdeluise.everymoney.exception.EntityNotFoundException;
 import com.github.mdeluise.everymoney.movements.outcome.Outcome;
 import com.github.mdeluise.everymoney.movements.outcome.OutcomeController;
-import com.github.mdeluise.everymoney.movements.outcome.OutcomeDTO;
+import com.github.mdeluise.everymoney.movements.outcome.OutcomeDTOConverter;
 import com.github.mdeluise.everymoney.movements.outcome.OutcomeService;
 import com.github.mdeluise.everymoney.security.ApplicationSecurityConfig;
 import com.github.mdeluise.everymoney.security.jwt.JwtTokenFilter;
@@ -49,7 +49,8 @@ import java.util.List;
         ApplicationConfig.class,
         WalletService.class,
         UserService.class,
-        PermissionService.class
+        PermissionService.class,
+        OutcomeDTOConverter.class,
     }
 )
 @WithMockUser(roles = "ADMIN")
@@ -68,6 +69,8 @@ public class OutcomeControllerTest {
     UserRepository userRepository;
     @MockBean
     PermissionRepository permissionRepository;
+    @Autowired
+    OutcomeDTOConverter outcomeDTOConverter;
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
@@ -144,7 +147,7 @@ public class OutcomeControllerTest {
         Mockito.when(outcomeService.update(0L, updated)).thenReturn(updated);
         Mockito.when(walletService.get(0L)).thenReturn(linkedWallet);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/outcome/0").content(objectMapper.writeValueAsString(new OutcomeDTO(updated)))
+        mockMvc.perform(MockMvcRequestBuilders.put("/outcome/0").content(objectMapper.writeValueAsString(outcomeDTOConverter.convertToDTO(updated)))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().isOk())
                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("outcome1"))
@@ -154,20 +157,20 @@ public class OutcomeControllerTest {
 
     @Test
     void whenUpdateNonExistingOutcome_shouldError() throws Exception {
-        Outcome updated = new Outcome();
-        updated.setId(0L);
-        updated.setDescription("outcome1");
         Category linkedCategory = new Category();
         linkedCategory.setName("category0");
-        updated.setCategory(linkedCategory);
         Wallet linkedWallet = new Wallet();
         linkedWallet.setId(0L);
         linkedWallet.setName("wallet0");
+        Outcome updated = new Outcome();
+        updated.setId(0L);
+        updated.setDescription("outcome1");
+        updated.setCategory(linkedCategory);
         updated.setWallet(linkedWallet);
         Mockito.doThrow(EntityNotFoundException.class).when(outcomeService).update(0L, updated);
         Mockito.when(walletService.get(0L)).thenReturn(linkedWallet);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/outcome/0").content(objectMapper.writeValueAsString(new OutcomeDTO(updated)))
+        mockMvc.perform(MockMvcRequestBuilders.put("/outcome/0").content(objectMapper.writeValueAsString(outcomeDTOConverter.convertToDTO(updated)))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
@@ -188,7 +191,7 @@ public class OutcomeControllerTest {
         Mockito.when(outcomeService.save(created)).thenReturn(created);
         Mockito.when(walletService.get(0L)).thenReturn(linkedWallet);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/outcome").content(objectMapper.writeValueAsString(new OutcomeDTO(created)))
+        mockMvc.perform(MockMvcRequestBuilders.post("/outcome").content(objectMapper.writeValueAsString(outcomeDTOConverter.convertToDTO(created)))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().isOk())
                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("outcome1"))

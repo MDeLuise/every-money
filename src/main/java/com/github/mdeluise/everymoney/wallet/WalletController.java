@@ -8,34 +8,45 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/wallet")
-public class WalletController implements AbstractCrudController<Wallet, Long> {
+public class WalletController implements AbstractCrudController<WalletDTO, Long> {
     private final WalletService service;
+    private final WalletDTOConverter walletDtoConverter;
 
 
     @Autowired
-    public WalletController(WalletService service) {
+    public WalletController(WalletService service, WalletDTOConverter walletDtoConverter) {
         this.service = service;
+        this.walletDtoConverter = walletDtoConverter;
     }
 
 
     @Override
-    public ResponseEntity<Collection<Wallet>> findAll() {
-        return new ResponseEntity<>(service.getAll(), HttpStatus.OK);
+    public ResponseEntity<Collection<WalletDTO>> findAll() {
+        Set<WalletDTO> result =
+            service.getAll().stream()
+                   .map(walletDtoConverter::convertToDTO)
+                   .collect(Collectors.toSet());
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<Wallet> find(Long id) {
-        return new ResponseEntity<>(service.get(id), HttpStatus.OK);
+    public ResponseEntity<WalletDTO> find(Long id) {
+        WalletDTO result = walletDtoConverter.convertToDTO(service.get(id));
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<Wallet> update(Wallet updatedEntity, Long id) {
-        return new ResponseEntity<>(service.update(id, updatedEntity), HttpStatus.OK);
+    public ResponseEntity<WalletDTO> update(WalletDTO updatedEntity, Long id) {
+        WalletDTO result =
+            walletDtoConverter.convertToDTO(service.update(id, walletDtoConverter.convertFromDTO(updatedEntity)));
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
@@ -46,7 +57,9 @@ public class WalletController implements AbstractCrudController<Wallet, Long> {
 
 
     @Override
-    public ResponseEntity<Wallet> save(Wallet entityToSave) {
-        return new ResponseEntity<>(service.save(entityToSave), HttpStatus.OK);
+    public ResponseEntity<WalletDTO> save(WalletDTO entityToSave) {
+        WalletDTO result =
+            walletDtoConverter.convertToDTO(service.save(walletDtoConverter.convertFromDTO(entityToSave)));
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

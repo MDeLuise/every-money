@@ -4,15 +4,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mdeluise.everymoney.TestEnvironment;
 import com.github.mdeluise.everymoney.category.Category;
 import com.github.mdeluise.everymoney.category.CategoryController;
+import com.github.mdeluise.everymoney.category.CategoryDTOConverter;
 import com.github.mdeluise.everymoney.category.CategoryService;
+import com.github.mdeluise.everymoney.category.subcategory.SubCategoryDTOConverter;
+import com.github.mdeluise.everymoney.category.subcategory.SubCategoryService;
 import com.github.mdeluise.everymoney.exception.EntityNotFoundException;
+import com.github.mdeluise.everymoney.movements.outcome.OutcomeDTOConverter;
+import com.github.mdeluise.everymoney.movements.outcome.OutcomeRepository;
+import com.github.mdeluise.everymoney.movements.outcome.OutcomeService;
 import com.github.mdeluise.everymoney.security.ApplicationSecurityConfig;
 import com.github.mdeluise.everymoney.security.jwt.JwtTokenFilter;
 import com.github.mdeluise.everymoney.security.jwt.JwtTokenUtil;
 import com.github.mdeluise.everymoney.security.jwt.JwtWebUtil;
+import com.github.mdeluise.everymoney.wallet.WalletService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,12 +42,26 @@ import java.util.List;
         JwtWebUtil.class,
         TestEnvironment.class,
         ApplicationSecurityConfig.class,
+        CategoryDTOConverter.class,
+        SubCategoryDTOConverter.class,
+        OutcomeDTOConverter.class,
+        ModelMapper.class
     }
 )
 @WithMockUser(roles = "ADMIN")
 public class CategoryControllerTest {
     @MockBean
     CategoryService categoryService;
+    @MockBean
+    OutcomeService outcomeService;
+    @MockBean
+    OutcomeRepository outcomeRepository;
+    @MockBean
+    WalletService walletService;
+    @MockBean
+    SubCategoryService subCategoryService;
+    @Autowired
+    CategoryDTOConverter categoryDTOConverter;
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
@@ -109,7 +131,8 @@ public class CategoryControllerTest {
         updated.setDescription("description1");
         Mockito.when(categoryService.update(0L, updated)).thenReturn(updated);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/category/0").content(objectMapper.writeValueAsString(updated))
+        mockMvc.perform(MockMvcRequestBuilders.put("/category/0").content(
+                                                  objectMapper.writeValueAsString(categoryDTOConverter.convertToDTO(updated)))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().isOk())
                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("category1"))
@@ -125,7 +148,8 @@ public class CategoryControllerTest {
         updated.setDescription("description1");
         Mockito.doThrow(EntityNotFoundException.class).when(categoryService).update(0L, updated);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/category/0").content(objectMapper.writeValueAsString(updated))
+        mockMvc.perform(MockMvcRequestBuilders.put("/category/0").content(
+                                                  objectMapper.writeValueAsString(categoryDTOConverter.convertToDTO(updated)))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
@@ -139,7 +163,8 @@ public class CategoryControllerTest {
         created.setDescription("description1");
         Mockito.when(categoryService.save(created)).thenReturn(created);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/category").content(objectMapper.writeValueAsString(created))
+        mockMvc.perform(MockMvcRequestBuilders.post("/category").content(
+                                                  objectMapper.writeValueAsString(categoryDTOConverter.convertToDTO(created)))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().isOk())
                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("category1"))

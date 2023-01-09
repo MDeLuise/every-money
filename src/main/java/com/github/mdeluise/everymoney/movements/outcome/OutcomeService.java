@@ -45,9 +45,9 @@ public class OutcomeService extends AbstractCrudService<Outcome, Long> {
     @Override
     public Outcome save(Outcome entityToSave) {
         Outcome saved = repository.save(entityToSave);
-        if (saved.getCounterpart() != null) {
-            saved.getCounterpart().setCounterpart(saved);
-            incomeRepository.save((Income) saved.getCounterpart());
+        if (saved.getCounterpart().isPresent()) {
+            saved.getCounterpart().get().setCounterpart(saved);
+            incomeRepository.save((Income) saved.getCounterpart().get());
         }
         return saved;
     }

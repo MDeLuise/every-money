@@ -8,34 +8,44 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/sub_category")
-public class SubCategoryController implements AbstractCrudController<SubCategory, Long> {
+public class SubCategoryController implements AbstractCrudController<SubCategoryDTO, Long> {
     private final SubCategoryService subCategoryService;
+    private final SubCategoryDTOConverter subCategoryDTOConverter;
 
 
     @Autowired
-    public SubCategoryController(SubCategoryService subCategoryService) {
+    public SubCategoryController(SubCategoryService subCategoryService,
+                                 SubCategoryDTOConverter subCategoryDTOConverter) {
         this.subCategoryService = subCategoryService;
+        this.subCategoryDTOConverter = subCategoryDTOConverter;
     }
 
 
     @Override
-    public ResponseEntity<Collection<SubCategory>> findAll() {
-        return new ResponseEntity<>(subCategoryService.getAll(), HttpStatus.OK);
+    public ResponseEntity<Collection<SubCategoryDTO>> findAll() {
+        Set<SubCategoryDTO> result =
+            subCategoryService.getAll().stream().map(subCategoryDTOConverter::convertToDTO).collect(Collectors.toSet());
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<SubCategory> find(Long id) {
-        return new ResponseEntity<>(subCategoryService.get(id), HttpStatus.OK);
+    public ResponseEntity<SubCategoryDTO> find(Long id) {
+        SubCategoryDTO result = subCategoryDTOConverter.convertToDTO(subCategoryService.get(id));
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<SubCategory> update(SubCategory updatedEntity, Long id) {
-        return new ResponseEntity<>(subCategoryService.update(id, updatedEntity), HttpStatus.OK);
+    public ResponseEntity<SubCategoryDTO> update(SubCategoryDTO updatedEntity, Long id) {
+        SubCategoryDTO result = subCategoryDTOConverter.convertToDTO(
+            subCategoryService.update(id, subCategoryDTOConverter.convertFromDTO(updatedEntity)));
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
@@ -46,7 +56,9 @@ public class SubCategoryController implements AbstractCrudController<SubCategory
 
 
     @Override
-    public ResponseEntity<SubCategory> save(SubCategory entityToSave) {
-        return new ResponseEntity<>(subCategoryService.save(entityToSave), HttpStatus.OK);
+    public ResponseEntity<SubCategoryDTO> save(SubCategoryDTO entityToSave) {
+        SubCategoryDTO result = subCategoryDTOConverter.convertToDTO(
+            subCategoryService.save(subCategoryDTOConverter.convertFromDTO(entityToSave)));
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

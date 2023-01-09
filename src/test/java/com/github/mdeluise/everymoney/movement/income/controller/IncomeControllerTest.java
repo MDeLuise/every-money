@@ -10,7 +10,7 @@ import com.github.mdeluise.everymoney.authorization.permission.PermissionService
 import com.github.mdeluise.everymoney.exception.EntityNotFoundException;
 import com.github.mdeluise.everymoney.movements.income.Income;
 import com.github.mdeluise.everymoney.movements.income.IncomeController;
-import com.github.mdeluise.everymoney.movements.income.IncomeDTO;
+import com.github.mdeluise.everymoney.movements.income.IncomeDTOConverter;
 import com.github.mdeluise.everymoney.movements.income.IncomeService;
 import com.github.mdeluise.everymoney.security.ApplicationSecurityConfig;
 import com.github.mdeluise.everymoney.security.jwt.JwtTokenFilter;
@@ -46,7 +46,8 @@ import java.util.List;
         ApplicationConfig.class,
         WalletService.class,
         UserService.class,
-        PermissionService.class
+        PermissionService.class,
+        IncomeDTOConverter.class
     }
 )
 @WithMockUser(roles = "ADMIN")
@@ -61,6 +62,8 @@ public class IncomeControllerTest {
     UserRepository userRepository;
     @MockBean
     PermissionRepository permissionRepository;
+    @Autowired
+    IncomeDTOConverter incomeDTOConverter;
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
@@ -135,7 +138,8 @@ public class IncomeControllerTest {
         Mockito.when(walletService.get(0L)).thenReturn(linkedWallet);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/income/0").content(
-                   objectMapper.writeValueAsString(new IncomeDTO(updated))).contentType(MediaType.APPLICATION_JSON))
+                                                  objectMapper.writeValueAsString(incomeDTOConverter.convertToDTO(updated)))
+                                              .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().isOk())
                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("income1"))
                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(0));
@@ -154,7 +158,8 @@ public class IncomeControllerTest {
         Mockito.doThrow(EntityNotFoundException.class).when(incomeService).update(0L, updated);
         Mockito.when(walletService.get(0L)).thenReturn(linkedWallet);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/income/0").content(objectMapper.writeValueAsString(new IncomeDTO(updated)))
+        mockMvc.perform(MockMvcRequestBuilders.put("/income/0").content(
+                                                  objectMapper.writeValueAsString(incomeDTOConverter.convertToDTO(updated)))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
@@ -172,7 +177,8 @@ public class IncomeControllerTest {
         Mockito.when(incomeService.save(created)).thenReturn(created);
         Mockito.when(walletService.get(0L)).thenReturn(linkedWallet);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/income").content(objectMapper.writeValueAsString(new IncomeDTO(created)))
+        mockMvc.perform(MockMvcRequestBuilders.post("/income").content(
+                                                  objectMapper.writeValueAsString(incomeDTOConverter.convertToDTO(created)))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(MockMvcResultMatchers.status().isOk())
                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("income1"))

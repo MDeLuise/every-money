@@ -58,7 +58,7 @@ public class WalletProcessor {
         return wallet.getMovements().stream().filter(movement -> movement instanceof Outcome)
                      .map(abstractMovement -> (Outcome) abstractMovement)
                      .filter(outcome -> outcome.getDate().isAfter(periodStart) && outcome.getDate().isBefore(periodEnd))
-                     .filter(outcome -> transfers || outcome.getCounterpart() == null)
+                     .filter(outcome -> transfers || outcome.getCounterpart().isEmpty())
                      .collect(Collectors.toSet());
     }
 
@@ -68,7 +68,7 @@ public class WalletProcessor {
         return wallet.getMovements().stream().filter(movement -> movement instanceof Income)
                      .map(abstractMovement -> (Income) abstractMovement)
                      .filter(income -> income.getDate().isAfter(periodStart) && income.getDate().isBefore(periodEnd))
-                     .filter(income -> transfers || income.getCounterpart() == null)
+                     .filter(income -> transfers || income.getCounterpart().isEmpty())
                      .collect(Collectors.toSet());
     }
 
