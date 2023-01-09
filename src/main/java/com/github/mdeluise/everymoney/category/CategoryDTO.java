@@ -2,15 +2,22 @@ package com.github.mdeluise.everymoney.category;
 
 import com.github.mdeluise.everymoney.category.subcategory.SubCategoryDTO;
 import com.github.mdeluise.everymoney.movements.outcome.OutcomeDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Schema(name = "Category", description = "Represent a category of outcomes.")
 public class CategoryDTO {
+    @Schema(description = "ID of the category.")
     private Long id;
+    @Schema(description = "Name of the category.", example = "Grocery")
     private String name;
+    @Schema(description = "Description of the category.", example = "Use this for grocery items", nullable = true)
     private String description;
+    @Schema(description = "Outcomes belonging to this category.", nullable = true)
     private Set<OutcomeDTO> outcomes = new HashSet<>();
+    @Schema(description = "Sub categories belonging to this category.", nullable = true)
     private Set<SubCategoryDTO> subCategories = new HashSet<>();
 
 

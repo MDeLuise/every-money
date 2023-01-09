@@ -2,9 +2,13 @@ package com.github.mdeluise.everymoney.processor.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mdeluise.everymoney.TestEnvironment;
+import com.github.mdeluise.everymoney.category.CategoryService;
+import com.github.mdeluise.everymoney.category.subcategory.SubCategoryService;
 import com.github.mdeluise.everymoney.exception.EntityNotFoundException;
 import com.github.mdeluise.everymoney.movements.income.Income;
+import com.github.mdeluise.everymoney.movements.income.IncomeDTOConverter;
 import com.github.mdeluise.everymoney.movements.outcome.Outcome;
+import com.github.mdeluise.everymoney.movements.outcome.OutcomeDTOConverter;
 import com.github.mdeluise.everymoney.processor.CategoryStatistic;
 import com.github.mdeluise.everymoney.processor.WalletProcessor;
 import com.github.mdeluise.everymoney.processor.WalletProcessorController;
@@ -17,6 +21,7 @@ import com.github.mdeluise.everymoney.wallet.WalletService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,6 +45,10 @@ import java.util.Set;
         JwtWebUtil.class,
         TestEnvironment.class,
         ApplicationSecurityConfig.class,
+        OutcomeDTOConverter.class,
+        ModelMapper.class,
+        IncomeDTOConverter.class,
+        OutcomeDTOConverter.class
     }
 )
 @WithMockUser(roles = "ADMIN")
@@ -48,6 +57,10 @@ public class WalletProcessorControllerTest {
     WalletProcessor walletProcessor;
     @MockBean
     WalletService walletService;
+    @MockBean
+    CategoryService categoryService;
+    @MockBean
+    SubCategoryService subCategoryService;
     @Autowired
     ObjectMapper objectMapper;
     @Autowired

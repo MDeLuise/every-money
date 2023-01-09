@@ -3,6 +3,7 @@ package com.github.mdeluise.everymoney.movements.outcome;
 import com.github.mdeluise.everymoney.category.Category;
 import com.github.mdeluise.everymoney.category.subcategory.SubCategory;
 import com.github.mdeluise.everymoney.movements.AbstractMovement;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "outcomes")
+@Schema(name = "Outcome", description = "Represent an outcome.")
 public class Outcome extends AbstractMovement {
     @NotNull
     @ManyToOne

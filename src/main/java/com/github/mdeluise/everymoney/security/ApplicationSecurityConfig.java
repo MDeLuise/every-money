@@ -68,6 +68,10 @@ public class ApplicationSecurityConfig {
         http.authorizeHttpRequests()
             .requestMatchers("/authentication/**").permitAll()
             .requestMatchers(h2ConsolePath + "/**").permitAll()
+            .requestMatchers(
+                "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
+                "/webjars/swagger-ui/**"
+            ).permitAll()
             .anyRequest().authenticated();
 
         http.headers().frameOptions().sameOrigin();

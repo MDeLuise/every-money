@@ -6,6 +6,8 @@ import com.github.mdeluise.everymoney.authentication.payload.response.MessageRes
 import com.github.mdeluise.everymoney.authentication.payload.response.UserInfoResponse;
 import com.github.mdeluise.everymoney.security.jwt.JwtWebUtil;
 import com.github.mdeluise.everymoney.security.services.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/authentication")
+@Tag(name = "Authentication", description = "Endpoints for authentication")
 public class AuthController {
     private final AuthenticationManager authManager;
     private final JwtWebUtil jwtWebUtil;
@@ -42,6 +45,10 @@ public class AuthController {
 
 
     @PostMapping("/login")
+    @Operation(
+        summary = "Username and password login",
+        description = "Login using username and password"
+    )
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authManager.authenticate(
@@ -68,6 +75,10 @@ public class AuthController {
 
 
     @PostMapping("/logout")
+    @Operation(
+        summary = "Logout",
+        description = "Logout from the system"
+    )
     public ResponseEntity<?> logoutUser() {
         ResponseCookie cookie = jwtWebUtil.generateCleanJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -76,6 +87,10 @@ public class AuthController {
 
 
     @PostMapping("/signup")
+    @Operation(
+        summary = "Signup",
+        description = "Create a new account"
+    )
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userService.existsByUsername(signUpRequest.username())) {
             return ResponseEntity.badRequest()

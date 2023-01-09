@@ -1,21 +1,34 @@
 package com.github.mdeluise.everymoney.movements;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.Instant;
 import java.util.Optional;
 
+@Schema(name = "Movement", description = "Represents a movement, can be an Income or an Outcome.")
 public class MovementDTO {
     public enum MovementDTOType {
         INCOME, OUTCOME
     }
 
+    @Schema(description = "ID of the movement.")
     private long id;
+    @Schema(description = "Amount of the movement.", defaultValue = "0")
     private double amount;
+    @Schema(description = "How many movements.", defaultValue = "1")
     private int quantity = 1;
+    @Schema(description = "Description of the movement.", example = "Bread", nullable = true)
     private String description;
+    @Schema(description = "Note of the movement.", example = "null", nullable = true)
     private String note;
+    @Schema(description = "Time of the movement.")
     private Instant date = Instant.now();
+    @Schema(description = "ID of the wallet belonging to.")
     private long walletId;
+    @Schema(description = "ID of the counterpart movement (if this is a transfer between wallets).", example = "null",
+        nullable = true)
     private Optional<Long> transferCounterpartId = Optional.empty();
+    @Schema(description = "Type of the movement.", example = "OUTCOME")
     private MovementDTOType type;
 
 
